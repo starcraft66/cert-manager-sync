@@ -20,6 +20,7 @@ type CloudflareStore struct {
 	ApiToken        string
 	ZoneId          string
 	CertId          string
+	CertType        string // sni_custom or legacy_custom
 }
 
 func (s *CloudflareStore) GetApiToken(ctx context.Context) error {
@@ -51,6 +52,12 @@ func (s *CloudflareStore) FromConfig(c tlssecret.GenericSecretSyncConfig) error 
 	}
 	if c.Config["cert-id"] != "" {
 		s.CertId = c.Config["cert-id"]
+	}
+	if c.Config["cert-type"] != "" {
+		s.CertType = c.Config["cert-type"]
+	}
+	if s.CertType == "" {
+		s.CertType = "sni_custom" // Default to sni_custom for free plan compatibility
 	}
 	// if secret name is in the format of "namespace/secretname" then parse it
 	if strings.Contains(s.SecretName, "/") {
@@ -104,6 +111,7 @@ func (s *CloudflareStore) Sync(c *tlssecret.Certificate) (map[string]string, err
 			ZoneID:      cloudflare.F(s.ZoneId),
 			Certificate: cloudflare.F(string(c.FullChain())),
 			PrivateKey:  cloudflare.F(string(c.Key)),
+			Type:        cloudflare.F(custom_certificates.CustomCertificateNewParamsType(s.CertType)),
 		})
 		if err != nil {
 			l.WithError(err).Errorf("cloudflare.CustomCertificates.New error")
