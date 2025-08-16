@@ -14,7 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: cert-manager-sync
 
 jobs:
   build-and-push:
@@ -47,7 +47,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -59,7 +59,7 @@ jobs:
       - name: Build and push multi-arch images
         if: github.event_name != 'pull_request'
         env:
-          KO_DOCKER_REPO: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          KO_DOCKER_REPO: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
         run: |
           # Convert tags to comma-separated list for ko
           TAGS=$(echo "${{ steps.meta.outputs.tags }}" | tr '\n' ',' | sed 's/,$//')
