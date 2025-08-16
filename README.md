@@ -92,6 +92,7 @@ Annotations:
     cert-manager-sync.lestak.sh/cloudflare-secret-name: "example-cloudflare-secret" # secret in same namespace which contains the cloudflare api token. If provided in format "namespace/secret-name", will look in that namespace for the secret
     cert-manager-sync.lestak.sh/cloudflare-zone-id: "example-zone-id" # cloudflare zone id
     cert-manager-sync.lestak.sh/cloudflare-cert-id: "" # will be auto-filled by operator for in-place renewals
+    cert-manager-sync.lestak.sh/cloudflare-cert-type: "sni_custom" # optional: certificate type (sni_custom or legacy_custom), defaults to sni_custom for free plan compatibility. Note: type can only be set when creating new certificates
 ```
 
 ### DigitalOcean
