@@ -56,7 +56,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push multi-arch images
-        # if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'
         env:
           KO_DOCKER_REPO: ${{ env.REGISTRY }}/${{ github.repository_owner }}/cert-manager-sync
         run: |
