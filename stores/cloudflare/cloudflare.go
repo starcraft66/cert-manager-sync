@@ -61,7 +61,6 @@ func (s *CloudflareStore) FromConfig(c tlssecret.GenericSecretSyncConfig) error 
 }
 
 func (s *CloudflareStore) Sync(c *tlssecret.Certificate) (map[string]string, error) {
-	s.SecretNamespace = c.Namespace
 	l := log.WithFields(log.Fields{
 		"action":          "Sync",
 		"store":           "cloudflare",
@@ -72,6 +71,12 @@ func (s *CloudflareStore) Sync(c *tlssecret.Certificate) (map[string]string, err
 	if s.SecretName == "" {
 		return nil, fmt.Errorf("secret name not found in certificate annotations")
 	}
+	
+	// If no explicit secret namespace was provided, use the certificate's namespace
+	if s.SecretNamespace == "" {
+		s.SecretNamespace = c.Namespace
+	}
+	
 	ctx := context.Background()
 	if err := s.GetApiToken(ctx); err != nil {
 		l.WithError(err).Errorf("GetApiToken error")
